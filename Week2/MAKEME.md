@@ -6,7 +6,7 @@ Write a node-JS program to get answers of following queries
 on the **new_world** database: Note that you are expected to get the input from user
 and use **prepared** statements to write the queries.
 
-Hint: use [this] (https://github.com/mysqljs/mysql) link to read more
+Hint: use [this] (https://github.com/sidorares/node-mysql2) link to read more
 about prepared statements.
 
 1. What is the capital of country X ? (Accept X from user)
