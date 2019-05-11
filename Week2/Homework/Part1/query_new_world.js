@@ -5,7 +5,7 @@ Hint: use [this] (https://github.com/sidorares/node-mysql2) link to read more ab
 What is the capital of country X ? (Accept X from user)
 List all the languages spoken in the region Y (Accept Y from user)
 Find the number of cities in which language Z is spoken (Accept Z from user)
-Are there any countries that have A) Same official language B) Same region If yes, display those countries. If no, display TRUE or FALSE
+Accept country from user. Are there any countries in the same region as this country with the same official language as given country. If yes, display those countries, if not display FALSE.
 List all the continents with the number of languages spoken in each continent */
 
 const mysql = require('mysql2');
@@ -33,8 +33,11 @@ const query2 =
 const query3 =
   'SELECT COUNT(*) AS "Number" FROM city WHERE CountryCode in (SELECT CountryCode FROM countryLanguage WHERE language = ?)';
 
-// Are there any countries that have A) Same official language B) Same region If yes, display those countries. If no, display TRUE or FALSE
-//const query4 = 'SELECT country.Name, countryLanguage.Language, country.Region FROM country INNER JOIN countryLanguage ON country.Code = countryLanguage.CountryCode WHERE ';
+// Accept country from user. Are there any countries in the same region as this country with the same official language as given country. If yes, display those countries, if not display FALSE.
+// const query4 =
+//  'SELECT Name, language FROM country AS c, countrylanguage AS cl WHERE region IN (SELECT region FROM country WHERE Name= "Mexico" ) AND c.code = cl.countrycode AND isofficial="T" AND cl.language IN (SELECT language FROM country AS c, countrylanguage AS cl WHERE c.Name= "Mexico" AND c.code = cl.countrycode AND isofficial="T"';
+// const query4 =
+//  'SELECT Name, language FROM country AS c, countrylanguage AS cl WHERE region IN (SELECT region FROM country WHERE Name= ? ) AND c.code = cl.countrycode AND isofficial="T" AND cl.language IN (SELECT language FROM country AS c, countrylanguage AS cl WHERE c.Name= ? AND c.code = cl.countrycode AND isofficial="T"';
 
 // List all the continents with the number of languages spoken in each continent
 const query5 =
@@ -110,18 +113,49 @@ const question3 = () => {
   });
 };
 
-/* // Are there any countries that have A) Same official language B) Same region If yes, display those countries. If no, display TRUE or FALSE
+/* // Accept country from user. Are there any countries in the same region as this country with the same official language as given country. If yes, display those countries, if not display FALSE.
 const question4 = () => {
   return new Promise((resolve, reject) => {
     delay(1000).then(() =>
-      connection.query(query5, function(error, results, fields) {
+      rl.question(
+        'Select a country and I will tell you what other countries are found in the same region with the same language: ',
+        name => {
+          console.log('Country you chose is: ', name);
+          connection.execute(query4, [name], (error, results) => {
+            console.log('Going to run ', query4, name);
+            if (error) {
+              throw error;
+            }
+            const answer = results[0].Number;
+            console.log(
+              `The country ${name} has the same language and is in the same region as: `
+            );
+            for (i in results) {
+            console.log(results[i].Name, results[i].Language);
+          }
+          });
+          connection.unprepare(query4);
+          resolve();
+        }
+      )
+    );
+  });
+}; */
+
+/* // State country in query. Are there any countries in the same region as this country with the same official language as given country. If yes, display those countries, if not display FALSE.
+const question4 = () => {
+  return new Promise((resolve, reject) => {
+    delay(1000).then(() =>
+      connection.query(query4, function(error, results, fields) {
         console.log('Going to run ', query4);
         if (error) {
           throw error;
         }
-        console.log('Countries with the same official languange and same region: ');
+        console.log(
+          'Countries that speak same language as Mexico and are found in the same region: '
+        );
         for (i in results) {
-          console.log(results[i].Name, results[i].Language, results[i].Region);
+          console.log(results[i].Name, results[i].Language);
         }
         resolve();
       })
